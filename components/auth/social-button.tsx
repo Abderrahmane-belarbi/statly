@@ -1,4 +1,4 @@
-//import { signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 type Prop = {
     target: "Google" | "Github";
     w?: string;
@@ -7,9 +7,9 @@ type Prop = {
 export default function SocialButton({ target=18, w, h=18 }: Prop) {
     return (
         <button
-            className="px-3 py-1.5 flex items-center gap-2 text-sm text-text rounded-lg border border-border active:bg-[#1e2547] transition-colors"
+            className="px-3 py-1.5 flex items-center gap-2 text-sm text-text rounded-lg border border-border active:bg-[#1e2547] active:scale-90 transition-all"
             onClick={() => {
-                // signIn((target as string).toLowerCase(), { callbackUrl: "/" })
+              signIn((target as string).toLowerCase(), { callbackUrl: "/" })
             }}
         >
             <span>
