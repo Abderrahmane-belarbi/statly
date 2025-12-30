@@ -4,7 +4,7 @@ type Prop = {
     w?: string;
     h?: string;
 };
-export default function SocialButton({ target=18, w, h=18 }: Prop) {
+export default function SocialButton({ target, w=18, h=18 }: Prop) {
     return (
         <button
             className="px-3 py-1.5 flex items-center gap-2 text-sm text-text rounded-lg border border-border active:bg-[#1e2547] active:scale-90 transition-all"
