@@ -15,6 +15,11 @@ export default function SignUpPage() {
         password: ""
     });
 
+    function onRegister(data: User) {
+      if(!user) return
+      const validated = userSchema.safeParse(data);
+    }
+
     return (
         <div className="w-full h-[calc(100dvh-64px)] flex flex-col items-center justify-center">
             <div className="max-w-[300px] flex flex-col items-start gap-3 border border-border p-7 bg-surface rounded-3xl">
