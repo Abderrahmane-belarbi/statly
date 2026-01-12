@@ -4,20 +4,31 @@ import Image from "next/image";
 import Link from "next/link";
 import SocialButton from "@/components/auth/social-button";
 import { useState } from "react";
-import { User, userSchema } from "@/lib/validation";
+import { UserRegister, UserRegisterSchema } from "@/lib/validation";
 import { Mail, Lock, User as UserIcon } from "lucide-react";
 import z from "zod";
 
 export default function SignUpPage() {
-    const [userData, setUserData] = useState<User>({
+    const [userData, setUserData] = useState<UserRegister>({
         username: "",
         email: "",
-        password: ""
+        password: "",
+        confirmPassword: ""
     });
-
-    function onRegister(data: User) {
-      if(!user) return
-      const validated = userSchema.safeParse(data);
+    const [errors, setErrors] = useState<FieldErrors>();
+    type FieldErrors = Partial<Record<keyof UserRegister, string>>;
+    function fieldErrors(error: z.zodError<UserRegister>): FieldErrors {
+        const flat = z.flattenError(error).fieldErrors;
+        return {
+            username: flat.username?.[0],
+            email: flat.email?.[0],
+            password: flat.password?.[0],
+            confirmPassword: flat.confirmPassword?.[0]
+        };
+    }
+    function onRegister(data: UserRegister) {
+        const validated = UserRegisterSchema.safeParse(data);
+        alert(JSON.stringify(validated));
     }
 
     return (
@@ -49,7 +60,6 @@ export default function SignUpPage() {
                     </p>
                 </div>
                 <div className="w-full flex flex-col gap-2">
-                    
                     <div className="relative">
                         <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                         <input
@@ -65,7 +75,7 @@ export default function SignUpPage() {
                             }
                         />
                     </div>
-                    
+
                     <div className="relative">
                         <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                         <input
@@ -98,9 +108,25 @@ export default function SignUpPage() {
                         />
                     </div>
 
+                    <div className="relative">
+                        <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                        <input
+                            value={userData.confirmPassword}
+                            type="password"
+                            placeholder="••••••••"
+                            className="pl-10 pr-3 input-app"
+                            onChange={event =>
+                                setUserData({
+                                    ...userData,
+                                    confirmPassword: event.target.value
+                                })
+                            }
+                        />
+                    </div>
+
                     <button
                         className="py-1 mt-2 rounded-xl font-bold text-white bg-[linear-gradient(90deg,#3B4ED3_0%,#4749C7_28%,#5A3EB4_62%,#6A3AA7_100%)] shadow-[0_18px_60px_rgba(72,76,210,0.22)] ring-1 ring-white/10 hover:brightness-110 active:brightness-95 transition"
-                        onClick={() => {}}
+                        onClick={() => onRegister(userData)}
                     >
                         Get Started
                     </button>
