@@ -7,28 +7,51 @@ import { useState } from "react";
 import { UserRegister, UserRegisterSchema } from "@/lib/validation";
 import { Mail, Lock, User as UserIcon } from "lucide-react";
 import z from "zod";
+import { createUser } from "@/lib/actions/user"
 
 export default function SignUpPage() {
     const [userData, setUserData] = useState<UserRegister>({
-        username: "",
+        name: "",
         email: "",
         password: "",
         confirmPassword: ""
     });
-    const [errors, setErrors] = useState<FieldErrors>();
+    const [isLoading, setIsLoading] = useState(false);
     type FieldErrors = Partial<Record<keyof UserRegister, string>>;
-    function fieldErrors(error: z.zodError<UserRegister>): FieldErrors {
+    const [errors, setErrors] = useState<FieldErrors>({});
+    function fieldErrors(error: z.ZodError<UserRegister>): FieldErrors {
         const flat = z.flattenError(error).fieldErrors;
         return {
-            username: flat.username?.[0],
+            name: flat.name?.[0],
             email: flat.email?.[0],
             password: flat.password?.[0],
             confirmPassword: flat.confirmPassword?.[0]
         };
     }
-    function onRegister(data: UserRegister) {
-        const validated = UserRegisterSchema.safeParse(data);
-        alert(JSON.stringify(validated));
+    function setField<K extends keyof UserRegister>(key: K, value: UserRegister[K] ){
+      setUserData((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+      setErrors ((prev) => ({...prev, [key]: undefined}))
+    }
+    async function onRegister(input: UserRegister) {
+      if (isLoading) return;
+      setIsLoading(true)
+      try {
+        const parsed = UserRegisterSchema.safeParse(input);
+        if(!parsed.success) {
+          setErrors(fieldErrors(parsed.error));
+          return;
+        }
+      alert("start3")
+        const data = parsed.data;
+        await createUser(data);
+      } catch (e) {
+        throw new Error(e);
+      } finally {
+        setIsLoading(false);
+      }
     }
 
     return (
@@ -59,38 +82,45 @@ export default function SignUpPage() {
                         all your projects.
                     </p>
                 </div>
-                <div className="w-full flex flex-col gap-2">
+                <form
+                  onSubmit={(e) => {
+                      e.preventDefault();
+                      onRegister(userData);
+                    }}
+                  className="w-full flex flex-col gap-2">
                     <div className="relative">
                         <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                         <input
-                            value={userData.username}
-                            type="Full name"
+                            value={userData.name}
+                            type="text"
+                            autoComplete="name"
                             placeholder="John doe"
                             className="pl-10 pr-3 input-app"
                             onChange={event =>
-                                setUserData({
-                                    ...userData,
-                                    username: event.target.value
-                                })
+                              setField("name", event.target.value)
                             }
                         />
                     </div>
+                        {errors.name && (
+                          <p className="text-red-500 text-xs -mt-2">{errors.username}</p>
+                        )}
 
                     <div className="relative">
                         <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                         <input
                             value={userData.email}
                             type="email"
+                            autoComplete="email"
                             placeholder="Email"
                             className="pl-10 pr-3 input-app"
                             onChange={event =>
-                                setUserData({
-                                    ...userData,
-                                    email: event.target.value
-                                })
+                              setField("email", event.target.value)
                             }
                         />
                     </div>
+                    {errors.email && (
+                      <p className="text-red-500 text-xs -mt-2">{errors.email}</p>
+                    )}
 
                     <div className="relative">
                         <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
@@ -100,13 +130,13 @@ export default function SignUpPage() {
                             placeholder="••••••••"
                             className="pl-10 pr-3 input-app"
                             onChange={event =>
-                                setUserData({
-                                    ...userData,
-                                    password: event.target.value
-                                })
+                              setField("password", event.target.value)
                             }
                         />
                     </div>
+                    {errors.password && (
+                      <p className="text-red-500 text-xs -mt-2">{errors.password}</p>
+                    )}
 
                     <div className="relative">
                         <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
@@ -116,21 +146,22 @@ export default function SignUpPage() {
                             placeholder="••••••••"
                             className="pl-10 pr-3 input-app"
                             onChange={event =>
-                                setUserData({
-                                    ...userData,
-                                    confirmPassword: event.target.value
-                                })
+                              setField("confirmPassword", event.target.value)
                             }
                         />
                     </div>
+                   {errors.confirmPassword && (
+                      <p className="text-red-500 text-xs -mt-2">{errors.confirmPassword}</p>
+                    )} 
 
                     <button
                         className="py-1 mt-2 rounded-xl font-bold text-white bg-[linear-gradient(90deg,#3B4ED3_0%,#4749C7_28%,#5A3EB4_62%,#6A3AA7_100%)] shadow-[0_18px_60px_rgba(72,76,210,0.22)] ring-1 ring-white/10 hover:brightness-110 active:brightness-95 transition"
-                        onClick={() => onRegister(userData)}
+                        disabled={isLoading}
+                        type="submit"
                     >
-                        Get Started
+                        { isLoading ? "Creating..." : "Get Started" }
                     </button>
-                </div>
+                </form>
                 <div className="w-full flex items-center gap-2">
                     <div className="h-px flex-1 bg-[#1e2547]" />
                     <p className="text-xs text-muted text-sm">
