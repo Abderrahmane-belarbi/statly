@@ -2,7 +2,7 @@
 import { Sparkles, ArrowRight, Target } from "lucide-react";
 type WelcomeBannerProps = {
     userName?: string;
-    tasks?: string;
+    tasks?: number;
     streak?: number;
 };
 export default function WelcomeBanner({

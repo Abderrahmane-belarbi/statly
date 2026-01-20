@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type User from "@/lib/types";
 import { signOut } from "next-auth/react";
+
+type User = {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
 
 export default function ProfileButton({ user }: { user: User }) {
     const [open, setOpen] = useState(false);
@@ -34,7 +39,7 @@ export default function ProfileButton({ user }: { user: User }) {
                 className="inline-flex items-center"
             >
                 <img
-                    src={user.image}
+                    src={user.image ?? ""}
                     width={30}
                     height={30}
                     className="rounded-full"
@@ -58,7 +63,7 @@ export default function ProfileButton({ user }: { user: User }) {
                 <p className="mt-1">{user.name}</p>
 
                 <button className="mt-3 w-full rounded-md border border-gray-500/40 px-3 py-2 text-left hover:bg-white/10 transition"
-                onClick={() => signOut({callBackUrl: "/"})}
+                onClick={() => signOut()}
                 >
                     Logout
                 </button>

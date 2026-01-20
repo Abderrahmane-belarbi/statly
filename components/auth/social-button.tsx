@@ -1,8 +1,8 @@
 import { signIn } from "next-auth/react";
 type Prop = {
     target: "Google" | "Github";
-    w?: string;
-    h?: string;
+    w?: number;
+    h?: number;
 };
 export default function SocialButton({ target, w=18, h=18 }: Prop) {
     return (

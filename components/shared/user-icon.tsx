@@ -1,6 +1,6 @@
 type IconProps = {
-    width?: string;
-    height?: string;
+    width?: number;
+    height?: number;
 };
 
 export default function UserIcon({ width = 18, height = 18 }: IconProps) {

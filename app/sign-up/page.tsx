@@ -44,11 +44,13 @@ export default function SignUpPage() {
           setErrors(fieldErrors(parsed.error));
           return;
         }
-      alert("start3")
         const data = parsed.data;
         await createUser(data);
       } catch (e) {
-        throw new Error(e);
+        if (e instanceof Error) {
+          throw new Error(e.message);
+        }
+        throw new Error("Something went wrong");
       } finally {
         setIsLoading(false);
       }
@@ -102,7 +104,7 @@ export default function SignUpPage() {
                         />
                     </div>
                         {errors.name && (
-                          <p className="text-red-500 text-xs -mt-2">{errors.username}</p>
+                          <p className="text-red-500 text-xs -mt-2">{errors.name}</p>
                         )}
 
                     <div className="relative">

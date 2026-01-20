@@ -4,12 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import SocialButton from "@/components/auth/social-button";
 import { useState } from "react";
-import { User, userSchema } from "@/lib/validation";
+import { UserLogin, UserLoginSchema } from "@/lib/validation";
 import { Mail, Lock, User as UserIcon } from "lucide-react";
 import z from "zod";
 
 export default function SignInPage() {
-    const [userData, setUserData] = useState<Parcial<User>>({
+    const [userData, setUserData] = useState<UserLogin>({
         email: "",
         password: ""
     });
